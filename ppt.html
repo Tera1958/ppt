@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>交互式幻灯片（HTML）</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #070a14;
+        --bg2: #0b1020;
+        --card: rgba(255, 255, 255, 0.06);
+        --card2: rgba(255, 255, 255, 0.08);
+        --stroke: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.66);
+        --faint: rgba(255, 255, 255, 0.4);
+        --accent: #39d0ff;
+        --accent2: #ff4d9d;
+        --ok: #7cffa7;
+        --warn: #ffd47c;
+        --danger: #ff7c9a;
+        --font-display: "Syne", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        --font-body: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        --radius-lg: clamp(18px, 2.4vw, 28px);
+        --radius-md: clamp(12px, 1.6vw, 18px);
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        --title: clamp(2.1rem, 5.8vw, 4.6rem);
+        --h2: clamp(1.35rem, 2.8vw, 2.35rem);
+        --h3: clamp(1.05rem, 1.8vw, 1.45rem);
+        --body: clamp(0.86rem, 1.35vw, 1.05rem);
+        --small: clamp(0.72rem, 1.1vw, 0.92rem);
+        --pad: clamp(1.2rem, 3.2vw, 3rem);
+        --gap-lg: clamp(0.9rem, 2vw, 1.6rem);
+        --gap-md: clamp(0.65rem, 1.5vw, 1.1rem);
+        --gap-sm: clamp(0.45rem, 1vw, 0.8rem);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+        background: var(--bg);
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: var(--font-body);
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        isolation: isolate;
+        background: radial-gradient(1200px 800px at 18% 18%, rgba(57, 208, 255, 0.18), transparent 60%),
+          radial-gradient(1000px 700px at 82% 26%, rgba(255, 77, 157, 0.16), transparent 58%),
+          radial-gradient(900px 700px at 62% 86%, rgba(124, 255, 167, 0.12), transparent 56%),
+          linear-gradient(180deg, var(--bg), var(--bg2));
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: clamp(22px, 3.2vw, 46px) clamp(22px, 3.2vw, 46px);
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .slide-inner {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-lg);
+        padding: var(--pad);
+        max-height: 100%;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--gap-md);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: var(--small);
+      }
+
+      .brand-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--accent), var(--accent2));
+        box-shadow: 0 0 0 4px rgba(57, 208, 255, 0.12);
+      }
+
+      .meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: var(--small);
+        color: var(--muted);
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.42em 0.8em;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px);
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .dot.ok {
+        background: var(--ok);
+      }
+
+      .dot.warn {
+        background: var(--warn);
+      }
+
+      .dot.danger {
+        background: var(--danger);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+      }
+
+      h1 {
+        font-size: var(--title);
+        line-height: 1.02;
+      }
+
+      h2 {
+        font-size: var(--h2);
+        line-height: 1.1;
+      }
+
+      h3 {
+        font-size: var(--h3);
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 0;
+        font-size: var(--body);
+        line-height: 1.45;
+        color: var(--muted);
+      }
+
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: var(--small);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .kicker .bar {
+        width: clamp(26px, 4vw, 48px);
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
+
+      .grid {
+        display: grid;
+        gap: var(--gap-md);
+        min-height: 0;
+      }
+
+      .grid.cols-2 {
+        grid-template-columns: 1.12fr 0.88fr;
+      }
+
+      .grid.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .grid.cols-2-eq {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.04));
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      .card-inner {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-sm);
+        padding: clamp(0.95rem, 2.2vw, 1.6rem);
+        min-height: 0;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--gap-sm);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.42em 0.8em;
+        border-radius: 999px;
+        font-size: var(--small);
+        color: rgba(255, 255, 255, 0.86);
+        background: rgba(57, 208, 255, 0.12);
+        border: 1px solid rgba(57, 208, 255, 0.22);
+      }
+
+      .badge.alt {
+        background: rgba(255, 77, 157, 0.12);
+        border-color: rgba(255, 77, 157, 0.22);
+      }
+
+      .badge.neutral {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-md);
+        justify-content: space-between;
+        min-height: 0;
+      }
+
+      .hero-main {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-md);
+      }
+
+      .hero-sub {
+        max-width: 64ch;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap-sm);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55em 1em;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: var(--small);
+        font-weight: 700;
+      }
+
+      .pill i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .pill i.p2 {
+        background: var(--accent2);
+      }
+
+      .pill i.p3 {
+        background: var(--ok);
+      }
+
+      .list {
+        display: grid;
+        gap: var(--gap-sm);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        min-height: 0;
+      }
+
+      .li {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.75rem;
+        align-items: start;
+        padding: 0.8em 1em;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .li .n {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: clamp(1rem, 1.6vw, 1.35rem);
+        line-height: 1;
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .li .t {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+      }
+
+      .li .t strong {
+        font-size: var(--body);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 800;
+      }
+
+      .li .t span {
+        font-size: var(--small);
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      .metrics {
+        display: grid;
+        gap: var(--gap-md);
+        min-height: 0;
+      }
+
+      .metric {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--gap-sm);
+        align-items: center;
+        padding: 0.9em 1em;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .metric .label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+      }
+
+      .metric .label b {
+        font-size: var(--body);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 800;
+      }
+
+      .metric .label s {
+        text-decoration: none;
+        font-size: var(--small);
+        color: var(--muted);
+      }
+
+      .metric .value {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: clamp(1.2rem, 2.4vw, 2.2rem);
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .bar {
+        height: clamp(8px, 1.4vw, 12px);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: var(--w, 60%);
+        background: linear-gradient(90deg, rgba(57, 208, 255, 0.95), rgba(255, 77, 157, 0.9));
+        border-radius: 999px;
+        box-shadow: 0 0 0 1px rgba(57, 208, 255, 0.14), 0 10px 30px rgba(57, 208, 255, 0.12);
+        transform-origin: left;
+        transform: scaleX(0);
+      }
+
+      .slide.visible .bar > span {
+        transform: scaleX(1);
+        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--gap-md);
+        font-size: var(--small);
+        color: var(--faint);
+      }
+
+      .hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45em 0.9em;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px);
+      }
+
+      .progress {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 4px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.07);
+        z-index: 50;
+      }
+
+      .progress > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
+
+      .nav {
+        position: fixed;
+        right: clamp(12px, 2vw, 20px);
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(8px, 1.4vw, 12px);
+        z-index: 60;
+      }
+
+      .nav button {
+        width: clamp(10px, 1.2vw, 12px);
+        height: clamp(10px, 1.2vw, 12px);
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .nav button[aria-current="true"] {
+        background: rgba(57, 208, 255, 0.75);
+        border-color: rgba(57, 208, 255, 0.9);
+        transform: scale(1.2);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .slide.visible .reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .reveal.d1 {
+        transition-delay: 0.06s;
+      }
+
+      .reveal.d2 {
+        transition-delay: 0.14s;
+      }
+
+      .reveal.d3 {
+        transition-delay: 0.22s;
+      }
+
+      .reveal.d4 {
+        transition-delay: 0.3s;
+      }
+
+      .reveal.d5 {
+        transition-delay: 0.38s;
+      }
+
+      @media (max-width: 900px) {
+        .grid.cols-2 {
+          grid-template-columns: 1fr;
+        }
+
+        .grid.cols-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-height: 700px) {
+        :root {
+          --pad: clamp(0.85rem, 2.6vw, 2rem);
+          --title: clamp(1.8rem, 5vw, 3.2rem);
+          --h2: clamp(1.2rem, 2.2vw, 1.8rem);
+          --body: clamp(0.82rem, 1.2vw, 0.98rem);
+        }
+      }
+
+      @media (max-height: 600px) {
+        .nav {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="nav" id="navDots" aria-label="幻灯片导航"></div>
+
+    <section class="slide" data-title="封面">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>HTML Slides</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot ok"></span><span>可直接打开</span></span>
+            <span class="chip"><span class="dot"></span><span>键盘/触控导航</span></span>
+          </div>
+        </div>
+
+        <div class="hero">
+          <div class="hero-main">
+            <div class="kicker reveal d1"><span class="bar"></span><span>通用汇报模板</span></div>
+            <h1 class="reveal d2">交互式幻灯片（HTML）</h1>
+            <p class="hero-sub reveal d3">
+              单文件、零依赖、可离线播放。适合做项目介绍、周报月报、产品宣讲或培训课件。
+            </p>
+            <div class="pill-row reveal d4">
+              <div class="pill"><i></i><span>视觉密度更高</span></div>
+              <div class="pill"><i class="p2"></i><span>动画更克制</span></div>
+              <div class="pill"><i class="p3"></i><span>全程无滚动</span></div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="hint">↑ ↓ / Space 切换</div>
+            <div>2026-03-28</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="目录">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>目录</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot"></span><span>建议 8–12 页</span></span>
+            <span class="chip"><span class="dot warn"></span><span>信息密度优先</span></span>
+          </div>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card reveal d1">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>这份PPT包含什么</h2>
+                <span class="badge neutral">TOC</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">01</div>
+                  <div class="t"><strong>背景与目标</strong><span>一句话交代：为什么做、要达成什么</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">02</div>
+                  <div class="t"><strong>方案概览</strong><span>用卡片网格说清：怎么做、做哪些模块</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">03</div>
+                  <div class="t"><strong>里程碑节奏</strong><span>时间线 + 交付物，强调可控与可验收</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">04</div>
+                  <div class="t"><strong>指标与价值</strong><span>把成果量化，给出对业务/团队的收益</span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card reveal d2">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>快速替换指南</h2>
+                <span class="badge">5分钟改完</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">A</div>
+                  <div class="t"><strong>改标题与日期</strong><span>封面页与页眉右侧</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">B</div>
+                  <div class="t"><strong>改卡片内容</strong><span>每页控制在 4–6 条要点</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">C</div>
+                  <div class="t"><strong>改指标与条形</strong><span>数值文本 + --w 进度</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">D</div>
+                  <div class="t"><strong>删/增页面</strong><span>自动生成导航点与进度条</span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">点击右侧圆点可跳转</div>
+          <div>2 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="背景与目标">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>背景与目标</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot ok"></span><span>清晰目标</span></span>
+            <span class="chip"><span class="dot"></span><span>可验收</span></span>
+          </div>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card reveal d1">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>问题陈述</h2>
+                <span class="badge alt">Context</span>
+              </div>
+              <p>
+                把这段改成你真实的业务背景：现状痛点、机会点、以及“如果不做会怎样”。尽量避免空话，用具象情境描述。
+              </p>
+              <div class="metrics">
+                <div class="metric">
+                  <div class="label"><b>影响范围</b><s>用户 / 团队 / 业务链路</s></div>
+                  <div class="value">广</div>
+                </div>
+                <div class="metric">
+                  <div class="label"><b>紧急程度</b><s>时效窗口 / 竞争压力</s></div>
+                  <div class="value">高</div>
+                </div>
+                <div class="metric">
+                  <div class="label"><b>可落地性</b><s>资源与依赖是否明确</s></div>
+                  <div class="value">强</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card reveal d2">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>本次目标</h2>
+                <span class="badge">Goals</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">1</div>
+                  <div class="t"><strong>目标A</strong><span>写清验收口径：什么算成功</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">2</div>
+                  <div class="t"><strong>目标B</strong><span>写清关键约束：成本、周期、范围</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">3</div>
+                  <div class="t"><strong>目标C</strong><span>写清外部依赖：接口、数据、权限</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">4</div>
+                  <div class="t"><strong>目标D</strong><span>写清风险边界：不做什么</span></div>
+                </li>
+              </ul>
+              <div class="bar"><span style="--w: 78%"></span></div>
+              <p style="color: rgba(255, 255, 255, 0.58)">进度条仅用于表达“完成度/确定性”，不代表真实时间。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">Space 下一页</div>
+          <div>3 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="方案概览">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>方案概览</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot"></span><span>模块化</span></span>
+            <span class="chip"><span class="dot ok"></span><span>可扩展</span></span>
+          </div>
+        </div>
+
+        <div class="card reveal d1">
+          <div class="card-inner">
+            <div class="card-title">
+              <h2>四块内容讲清楚“怎么做”</h2>
+              <span class="badge neutral">6 cards max</span>
+            </div>
+            <div class="grid cols-3">
+              <div class="card" style="background: rgba(57, 208, 255, 0.09); border-color: rgba(57, 208, 255, 0.22); box-shadow: none">
+                <div class="card-inner">
+                  <h3>输入</h3>
+                  <p>需求、数据、约束条件、上下游依赖。</p>
+                  <div class="bar"><span style="--w: 64%"></span></div>
+                </div>
+              </div>
+              <div class="card" style="background: rgba(255, 77, 157, 0.085); border-color: rgba(255, 77, 157, 0.22); box-shadow: none">
+                <div class="card-inner">
+                  <h3>策略</h3>
+                  <p>方案选择、权衡理由、默认假设。</p>
+                  <div class="bar"><span style="--w: 72%"></span></div>
+                </div>
+              </div>
+              <div class="card" style="background: rgba(124, 255, 167, 0.085); border-color: rgba(124, 255, 167, 0.2); box-shadow: none">
+                <div class="card-inner">
+                  <h3>执行</h3>
+                  <p>拆解任务、里程碑、交付物。</p>
+                  <div class="bar"><span style="--w: 58%"></span></div>
+                </div>
+              </div>
+              <div class="card" style="background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.12); box-shadow: none">
+                <div class="card-inner">
+                  <h3>质量</h3>
+                  <p>测试、监控、回滚与灰度策略。</p>
+                  <div class="bar"><span style="--w: 66%"></span></div>
+                </div>
+              </div>
+              <div class="card" style="background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.12); box-shadow: none">
+                <div class="card-inner">
+                  <h3>协作</h3>
+                  <p>协同机制、节奏对齐、决策边界。</p>
+                  <div class="bar"><span style="--w: 61%"></span></div>
+                </div>
+              </div>
+              <div class="card" style="background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.12); box-shadow: none">
+                <div class="card-inner">
+                  <h3>产出</h3>
+                  <p>可复用资产、文档、规范与指标闭环。</p>
+                  <div class="bar"><span style="--w: 75%"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">↑ 回上一页</div>
+          <div>4 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="里程碑">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>里程碑</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot"></span><span>节奏可控</span></span>
+            <span class="chip"><span class="dot ok"></span><span>可验收</span></span>
+          </div>
+        </div>
+
+        <div class="grid cols-2-eq">
+          <div class="card reveal d1">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>阶段拆解</h2>
+                <span class="badge">Timeline</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">W1</div>
+                  <div class="t"><strong>对齐需求</strong><span>范围冻结、验收口径、风险清单</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">W2</div>
+                  <div class="t"><strong>交付核心链路</strong><span>主流程跑通 + 最小闭环指标</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">W3</div>
+                  <div class="t"><strong>补齐边界</strong><span>异常处理、性能、可观测性</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">W4</div>
+                  <div class="t"><strong>上线与复盘</strong><span>灰度、回滚预案、复盘产出</span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card reveal d2">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>验收清单</h2>
+                <span class="badge alt">Checklist</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">✓</div>
+                  <div class="t"><strong>功能</strong><span>主路径 + 关键边界路径</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">✓</div>
+                  <div class="t"><strong>质量</strong><span>单测/集成/回归 + 指标面板</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">✓</div>
+                  <div class="t"><strong>体验</strong><span>首屏、交互、错误提示一致性</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">✓</div>
+                  <div class="t"><strong>安全</strong><span>权限、审计、敏感数据处理</span></div>
+                </li>
+              </ul>
+              <div class="bar"><span style="--w: 84%"></span></div>
+              <p style="color: rgba(255, 255, 255, 0.58)">把“能不能验收”变成“怎么验收”。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">PageDown / Space</div>
+          <div>5 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="指标与价值">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>指标与价值</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot ok"></span><span>可量化</span></span>
+            <span class="chip"><span class="dot"></span><span>可复盘</span></span>
+          </div>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card reveal d1">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>关键指标</h2>
+                <span class="badge">Metrics</span>
+              </div>
+              <div class="metrics">
+                <div class="metric">
+                  <div class="label"><b>时效提升</b><s>流程耗时减少</s></div>
+                  <div class="value">-35%</div>
+                </div>
+                <div class="bar"><span style="--w: 68%"></span></div>
+                <div class="metric">
+                  <div class="label"><b>质量提升</b><s>缺陷率下降</s></div>
+                  <div class="value">-22%</div>
+                </div>
+                <div class="bar"><span style="--w: 54%"></span></div>
+                <div class="metric">
+                  <div class="label"><b>覆盖提升</b><s>可服务场景数</s></div>
+                  <div class="value">+3x</div>
+                </div>
+                <div class="bar"><span style="--w: 82%"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card reveal d2">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>价值说明</h2>
+                <span class="badge alt">Why it matters</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">①</div>
+                  <div class="t"><strong>对业务</strong><span>更快交付、可观测、可追责</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">②</div>
+                  <div class="t"><strong>对团队</strong><span>减少重复劳动，沉淀可复用资产</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">③</div>
+                  <div class="t"><strong>对用户</strong><span>稳定体验，错误更少，反馈更明确</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">④</div>
+                  <div class="t"><strong>对未来</strong><span>扩展新场景时，成本更低</span></div>
+                </li>
+              </ul>
+              <div class="pill-row">
+                <div class="pill"><i></i><span>可持续</span></div>
+                <div class="pill"><i class="p2"></i><span>可复用</span></div>
+                <div class="pill"><i class="p3"></i><span>可复盘</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">End 跳到最后</div>
+          <div>6 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="风险与对策">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>风险与对策</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot warn"></span><span>提前暴露</span></span>
+            <span class="chip"><span class="dot ok"></span><span>可缓释</span></span>
+          </div>
+        </div>
+
+        <div class="grid cols-2-eq">
+          <div class="card reveal d1">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>主要风险</h2>
+                <span class="badge alt">Risks</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">R1</div>
+                  <div class="t"><strong>依赖不确定</strong><span>接口/数据变动频繁，影响交付</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">R2</div>
+                  <div class="t"><strong>范围膨胀</strong><span>需求追加导致节奏失控</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">R3</div>
+                  <div class="t"><strong>上线风险</strong><span>灰度策略不足或回滚链路不清晰</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">R4</div>
+                  <div class="t"><strong>指标失真</strong><span>缺少埋点/口径不一致导致结论偏差</span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card reveal d2">
+            <div class="card-inner">
+              <div class="card-title">
+                <h2>应对策略</h2>
+                <span class="badge">Mitigation</span>
+              </div>
+              <ul class="list">
+                <li class="li">
+                  <div class="n">S1</div>
+                  <div class="t"><strong>依赖看板</strong><span>每日同步依赖状态，阻塞及时升级</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">S2</div>
+                  <div class="t"><strong>范围护栏</strong><span>新增需求走评审，明确换取项</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">S3</div>
+                  <div class="t"><strong>演练与回滚</strong><span>预发演练 + 一键回滚与开关</span></div>
+                </li>
+                <li class="li">
+                  <div class="n">S4</div>
+                  <div class="t"><strong>指标治理</strong><span>统一口径，数据链路验收</span></div>
+                </li>
+              </ul>
+              <div class="bar"><span style="--w: 73%"></span></div>
+              <p style="color: rgba(255, 255, 255, 0.58)">风险页建议放在“上线前”或“结尾Q&A前”。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="hint">Home 回到封面</div>
+          <div>7 / 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="结束">
+      <div class="slide-inner">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span><span>Q&A</span></div>
+          <div class="meta">
+            <span class="chip"><span class="dot"></span><span>谢谢</span></span>
+            <span class="chip"><span class="dot ok"></span><span>欢迎提问</span></span>
+          </div>
+        </div>
+
+        <div class="hero">
+          <div class="hero-main">
+            <div class="kicker reveal d1"><span class="bar"></span><span>Closing</span></div>
+            <h1 class="reveal d2">谢谢</h1>
+            <p class="hero-sub reveal d3">把这页改成你的署名、联系方式或下一步行动（CTA）。</p>
+            <div class="grid cols-3 reveal d4">
+              <div class="card" style="box-shadow: none">
+                <div class="card-inner">
+                  <h3>下一步</h3>
+                  <p>确认范围与时间线，锁定验收口径。</p>
+                </div>
+              </div>
+              <div class="card" style="box-shadow: none">
+                <div class="card-inner">
+                  <h3>需要支持</h3>
+                  <p>数据、权限、上下游排期、评审资源。</p>
+                </div>
+              </div>
+              <div class="card" style="box-shadow: none">
+                <div class="card-inner">
+                  <h3>联系方式</h3>
+                  <p>name@company.com<br />@your-handle</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="hint">Esc 不会退出，仅用于交互扩展</div>
+            <div>8 / 8</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      class SlideDeck {
+        constructor() {
+          this.slides = Array.from(document.querySelectorAll(".slide"));
+          this.nav = document.getElementById("navDots");
+          this.progressBar = document.getElementById("progressBar");
+          this.current = 0;
+          this.isAnimating = false;
+          this.touch = { startY: 0, startX: 0, active: false };
+
+          this.setupObserver();
+          this.setupNavDots();
+          this.setupKeyboard();
+          this.setupTouch();
+          this.updateProgress();
+          this.syncCurrentFromScroll();
+
+          window.addEventListener(
+            "scroll",
+            () => {
+              this.syncCurrentFromScroll();
+              this.updateProgress();
+              this.updateNavState();
+            },
+            { passive: true }
+          );
+
+          window.addEventListener(
+            "resize",
+            () => {
+              this.syncCurrentFromScroll();
+              this.updateProgress();
+              this.updateNavState();
+            },
+            { passive: true }
+          );
+        }
+
+        setupObserver() {
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const e of entries) {
+                if (e.isIntersecting) e.target.classList.add("visible");
+              }
+            },
+            { threshold: 0.35 }
+          );
+          this.slides.forEach((s) => io.observe(s));
+        }
+
+        setupNavDots() {
+          this.nav.innerHTML = "";
+          this.slides.forEach((slide, idx) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.setAttribute("aria-label", `${idx + 1}/${this.slides.length} ${slide.dataset.title || ""}`.trim());
+            b.addEventListener("click", () => this.goTo(idx), { passive: true });
+            this.nav.appendChild(b);
+          });
+          this.updateNavState();
+        }
+
+        setupKeyboard() {
+          document.addEventListener("keydown", (e) => {
+            if (this.isAnimating) return;
+
+            const key = e.key;
+            const nextKeys = ["ArrowDown", "PageDown", " ", "Enter"];
+            const prevKeys = ["ArrowUp", "PageUp"];
+
+            if (key === "Home") {
+              e.preventDefault();
+              this.goTo(0);
+              return;
+            }
+            if (key === "End") {
+              e.preventDefault();
+              this.goTo(this.slides.length - 1);
+              return;
+            }
+            if (nextKeys.includes(key)) {
+              e.preventDefault();
+              this.next();
+              return;
+            }
+            if (prevKeys.includes(key)) {
+              e.preventDefault();
+              this.prev();
+            }
+          });
+        }
+
+        setupTouch() {
+          const onStart = (e) => {
+            const t = e.touches ? e.touches[0] : e;
+            this.touch.startY = t.clientY;
+            this.touch.startX = t.clientX;
+            this.touch.active = true;
+          };
+
+          const onEnd = (e) => {
+            if (!this.touch.active || this.isAnimating) return;
+            const t = e.changedTouches ? e.changedTouches[0] : e;
+            const dy = t.clientY - this.touch.startY;
+            const dx = t.clientX - this.touch.startX;
+            this.touch.active = false;
+
+            if (Math.abs(dy) < 40) return;
+            if (Math.abs(dx) > Math.abs(dy)) return;
+
+            if (dy < 0) this.next();
+            else this.prev();
+          };
+
+          window.addEventListener("touchstart", onStart, { passive: true });
+          window.addEventListener("touchend", onEnd, { passive: true });
+        }
+
+        syncCurrentFromScroll() {
+          const y = window.scrollY + window.innerHeight * 0.5;
+          let best = 0;
+          let bestDist = Infinity;
+          this.slides.forEach((s, idx) => {
+            const top = s.offsetTop;
+            const mid = top + s.offsetHeight * 0.5;
+            const dist = Math.abs(mid - y);
+            if (dist < bestDist) {
+              bestDist = dist;
+              best = idx;
+            }
+          });
+          this.current = best;
+        }
+
+        updateNavState() {
+          const buttons = Array.from(this.nav.querySelectorAll("button"));
+          buttons.forEach((b, idx) => b.setAttribute("aria-current", idx === this.current ? "true" : "false"));
+        }
+
+        updateProgress() {
+          const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+          const p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+          this.progressBar.style.width = `${(p * 100).toFixed(2)}%`;
+        }
+
+        goTo(idx) {
+          const clamped = Math.max(0, Math.min(this.slides.length - 1, idx));
+          const target = this.slides[clamped];
+          if (!target) return;
+          this.isAnimating = true;
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          window.setTimeout(() => {
+            this.isAnimating = false;
+            this.current = clamped;
+            this.updateNavState();
+            this.updateProgress();
+          }, 420);
+        }
+
+        next() {
+          this.goTo(this.current + 1);
+        }
+
+        prev() {
+          this.goTo(this.current - 1);
+        }
+      }
+
+      new SlideDeck();
+    </script>
+  </body>
+</html>

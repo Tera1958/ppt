@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地缘冲突与全球能源市场</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* 导航按钮 */
+        .nav-buttons {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.prev {
+            background-color: rgba(100, 100, 100, 0.7);
+            color: white;
+        }
+
+        .nav-btn.next {
+            background-color: #000;
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* 幻灯片指示器 */
+        .slide-indicators {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background-color: #000;
+            transform: scale(1.3);
+        }
+
+        /* ===== 幻灯片1：标题页 ===== */
+        .slide-1 {
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8f5e9 50%, #e3f2fd 100%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .slide-1 .category-tag {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .slide-1 h1 {
+            font-size: 72px;
+            font-weight: 900;
+            color: #000;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+        }
+
+        .slide-1 .subtitle {
+            font-size: 20px;
+            color: #333;
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* ===== 幻灯片2：冲突与定价机制 ===== */
+        .slide-2 {
+            background: linear-gradient(135deg, #f5f5f5 0%, #f0f4f8 100%);
+            flex-direction: column;
+            padding: 60px 80px;
+            justify-content: flex-start;
+            padding-top: 80px;
+        }
+
+        .slide-2 .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .slide-2 h2 {
+            font-size: 56px;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .core-question {
+            background-color: white;
+            border: 2px solid #999;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .content-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f39c12;
+            margin-bottom: 20px;
+        }
+
+        .content-card p {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .content-card ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .content-card li {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .content-card li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        /* ===== 幻灯片3：霍尔木兹海峡 ===== */
+        .slide-3 {
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
+            flex-direction: column;
+            padding: 60px 80px;
+            justify-content: flex-start;
+            padding-top: 80px;
+        }
+
+        .slide-3 .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .slide-3 h2 {
+            font-size: 56px;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .strategic-tag {
+            background-color: white;
+            border: 2px solid #999;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .strategic-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 40px;
+            align-items: center;
+        }
+
+        .strategic-left {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .strategic-question {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .stat-box {
+            background-color: white;
+            border-left: 5px solid #f39c12;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+
+        .stat-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .strategic-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== 幻灯片4：制裁vs战争 ===== */
+        .slide-4 {
+            background: linear-gradient(135deg, #bbdefb 0%, #c8e6c9 50%, #fff9c4 100%);
+            flex-direction: row;
+            padding: 0;
+        }
+
+        .slide-4-left {
+            flex: 1;
+            background: linear-gradient(135deg, #5c9cff 0%, #4a90e2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .slide-4-left .tag {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            width: fit-content;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .slide-4-left h2 {
+            font-size: 56px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .slide-4-left p {
+            font-size: 18px;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        .slide-4-right {
+            flex: 1;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .comparison-item {
+            margin-bottom: 40px;
+        }
+
+        .comparison-item .number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+
+        .comparison-item h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 12px;
+        }
+
+        .comparison-item p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* ===== 幻灯片5：国家差异影响 ===== */
+        .slide-5 {
+            background: linear-gradient(135deg, #fff3e0 0%, #f1f8e9 50%, #e0f2f1 100%);
+            flex-direction: column;
+            padding: 60px 80px;
+            justify-content: flex-start;
+            padding-top: 80px;
+        }
+
+        .slide-5 h2 {
+            font-size: 56px;
+            font-weight: 900;
+            color: #000;
+            margin-bottom: 50px;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .impact-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #4caf50;
+        }
+
+        .impact-card.negative {
+            border-top-color: #f44336;
+        }
+
+        .impact-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .impact-card .countries {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .impact-card p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* ===== 幻灯片6：美国真实动机 ===== */
+        .slide-6 {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1f5fe 50%, #f0f4c3 100%);
+            flex-direction: column;
+            padding: 60px 80px;
+            justify-content: flex-start;
+            padding-top: 80px;
+        }
+
+        .slide-6 h2 {
+            font-size: 56px;
+            font-weight: 900;
+            color: #000;
+            margin-bottom: 50px;
+        }
+
+        .motivation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .motivation-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .motivation-card .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .motivation-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .motivation-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* ===== 幻灯片7：结论 ===== */
+        .slide-7 {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #fff9c4 100%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .slide-7 h2 {
+            font-size: 64px;
+            font-weight: 900;
+            color: #000;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.2;
+        }
+
+        .conclusion-box {
+            background-color: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .conclusion-box p {
+            font-size: 18px;
+            color: #333;
+            line-height: 2;
+            margin-bottom: 20px;
+        }
+
+        .conclusion-box .highlight {
+            color: #f39c12;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- 幻灯片1：标题页 -->
+        <div class="slide slide-1 active">
+            <div class="category-tag">地缘政治经济学</div>
+            <h1>地缘冲突与<br>全球能源市场</h1>
+            <p class="subtitle">战争如何通过"预期"重塑油价，以及大国博弈的底层逻辑。</p>
+        </div>
+
+        <!-- 幻灯片2：冲突与定价机制 -->
+        <div class="slide slide-2">
+            <div class="header-section">
+                <h2>冲突与定价机制</h2>
+                <div class="core-question">核心问题：预期 vs 实际供给</div>
+            </div>
+            <div class="content-grid">
+                <div class="content-card">
+                    <h3>逻辑机制</h3>
+                    <p>战争对油价的影响往往不是因为实际产量立即中断，而是通过"风险溢价"和恐慌预期映在期货市场中。</p>
+                    <ul>
+                        <li>市场对潜在断供的恐慌买入</li>
+                        <li>投机资金推波助澜放大波动</li>
+                    </ul>
+                </div>
+                <div class="content-card">
+                    <h3>经典案例验证</h3>
+                    <p><strong>伊拉克战争 (2003)</strong><br>
+                    并战前期期推动油价飙升，但战争真正打响且确保未破坏核心油田后，油价反而出现"实预期"的回落。</p>
+                    <p><strong>美伊关系紧张升级</strong><br>
+                    每当出现口头威胁或冲突升级，油价短期脉冲式上涨，但缺乏实质性断供时迅速回落。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片3：霍尔木兹海峡 -->
+        <div class="slide slide-3">
+            <div class="header-section">
+                <h2>战略咽喉：霍尔木兹海峡</h2>
+                <div class="strategic-tag">不可替代的地理节点</div>
+            </div>
+            <div class="strategic-content">
+                <div class="strategic-left">
+                    <p class="strategic-question">全球能源的"大动脉"</p>
+                    <p style="font-size: 16px; color: #666; margin-bottom: 20px;">为什么这个地理点对全球能源如此关键？</p>
+                    
+                    <div class="stat-box">
+                        <div class="stat-number">~20%</div>
+                        <div class="stat-text">承担全球约20%的石油消费量运输</div>
+                    </div>
+                    
+                    <div class="stat-box">
+                        <div class="stat-text"><strong>极度缺乏替代路径</strong><br>周围陆路管道运力远远无法弥补海峡封锁造成的缺口。</div>
+                    </div>
+                </div>
+                <div class="strategic-right">
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000000!2d54.5!3d26.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5e4c8c8c8c8c8d%3A0x8c8c8c8c8c8c8c8c!2sHormuz%20Strait!5e0!3m2!1sen!2s!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片4：制裁vs战争 -->
+        <div class="slide slide-4">
+            <div class="slide-4-left">
+                <div class="tag">市场预期手段</div>
+                <h2>制裁与战争的区别</h2>
+                <p>以伊朗为实体案例：不同的政治手段对能源市场的冲击维度截然不同。</p>
+            </div>
+            <div class="slide-4-right">
+                <div class="comparison-item">
+                    <div class="number">01</div>
+                    <h3>经济制裁 (Sanctions)</h3>
+                    <p>长期供给减少。通过金融封锁和禁运，实质性地把部分原油产能长期踢出国际合法市场，改变长期的供需基本面。</p>
+                </div>
+                <div class="comparison-item">
+                    <div class="number">02</div>
+                    <h3>直接战争 (War)</h3>
+                    <p>短期冲击 + 风险溢价。带来剧烈的短期不确定性，推高保险和运输成本。但除非摧毁核心设施，否则对长期产能影响有限。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片5：国家差异影响 -->
+        <div class="slide slide-5">
+            <h2>对不同国家的影响差异</h2>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <h3>✓ 能源出口国受益</h3>
+                    <div class="countries">沙特阿拉伯、阿联酋、俄罗斯等</div>
+                    <p>油价上升直接增加出口收入。地缘冲突越激烈，这些国家的战略地位越凸显，议价权越强。</p>
+                </div>
+                <div class="impact-card negative">
+                    <h3>✗ 能源进口国受损</h3>
+                    <div class="countries">中国、日本、欧盟、印度等</div>
+                    <p>油价上升推高进口成本，引发通胀压力。需要动用战略储备或寻求替代能源，短期成本巨大。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片6：美国真实动机 -->
+        <div class="slide slide-6">
+            <h2>美国的真实动机</h2>
+            <div class="motivation-grid">
+                <div class="motivation-card">
+                    <div class="icon">💵</div>
+                    <h3>维护全球能源定价权</h3>
+                    <p>石油以美元计价是美元霸权的基石。控制中东局势 = 控制全球能源定价权。</p>
+                </div>
+                <div class="motivation-card">
+                    <div class="icon">🚢</div>
+                    <h3>控制关键运输通道</h3>
+                    <p>霍尔木兹海峡、苏伊士运河等战略要道的控制权直接影响全球贸易流向和美国的地缘影响力。</p>
+                </div>
+                <div class="motivation-card">
+                    <div class="icon">⚔️</div>
+                    <h3>地缘政治博弈</h3>
+                    <p>对抗伊朗、俄罗斯等竞争对手的影响力扩张，维持中东的亲美格局。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片7：结论 -->
+        <div class="slide slide-7">
+            <h2>核心结论</h2>
+            <div class="conclusion-box">
+                <p>战争 <span class="highlight">≠ 唯一因素</span>，但会<span class="highlight">放大波动</span></p>
+                <p>油价由多重因素决定：OPEC 政策、全球需求周期、美元强弱、地缘冲突等。但地缘冲突通过"预期"机制，能在短期内显著放大市场波动，创造套利机会。</p>
+                <p style="margin-top: 30px; font-size: 16px; color: #999;">理解这一点，才能看透大国在中东的真实博弈逻辑。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导航按钮 -->
+    <div class="nav-buttons">
+        <button class="nav-btn prev" onclick="previousSlide()">←</button>
+        <button class="nav-btn next" onclick="nextSlide()">→</button>
+    </div>
+
+    <!-- 幻灯片指示器 -->
+    <div class="slide-indicators" id="indicators"></div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 7;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n >= totalSlides) currentSlide = 0;
+            if (n < 0) currentSlide = totalSlides - 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            
+            updateIndicators();
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+
+        function updateIndicators() {
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((ind, idx) => {
+                ind.classList.toggle('active', idx === currentSlide);
+            });
+        }
+
+        function initIndicators() {
+            const container = document.getElementById('indicators');
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (i === 0) indicator.classList.add('active');
+                indicator.onclick = () => {
+                    currentSlide = i;
+                    showSlide(currentSlide);
+                };
+                container.appendChild(indicator);
+            }
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+
+        initIndicators();
+    </script>
+</body>
+</html>
+
