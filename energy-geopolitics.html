@@ -176,8 +176,8 @@
 
         .slide-2-layout {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 40px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
             margin-top: 40px;
             height: calc(100vh - 280px);
         }
@@ -185,43 +185,43 @@
         .slide-2-left {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             overflow-y: auto;
-            padding-right: 20px;
+            padding-right: 15px;
         }
 
         .content-card {
             background-color: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             flex-shrink: 0;
         }
 
         .content-card h3 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #f39c12;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .content-card p {
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
-            line-height: 1.7;
-            margin-bottom: 12px;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
 
         .content-card ul {
             list-style: none;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .content-card li {
-            font-size: 13px;
+            font-size: 12px;
             color: #555;
-            margin-bottom: 10px;
-            padding-left: 18px;
+            margin-bottom: 8px;
+            padding-left: 16px;
             position: relative;
         }
 
@@ -236,7 +236,7 @@
         .chart-container {
             background-color: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
@@ -244,28 +244,28 @@
         }
 
         .chart-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #000;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .chart-subtitle {
-            font-size: 12px;
+            font-size: 11px;
             color: #999;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        #oilChart {
+        #oilChart, #iraqChart {
             flex: 1;
             width: 100%;
         }
 
         .chart-legend {
             display: flex;
-            gap: 20px;
-            margin-top: 15px;
-            font-size: 12px;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 11px;
             color: #666;
             flex-wrap: wrap;
         }
@@ -273,12 +273,12 @@
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .legend-color {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 2px;
         }
 
@@ -306,6 +306,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -684,7 +685,7 @@
             <p class="subtitle">战争如何通过"预期"重塑油价，以及大国博弈的底层逻辑。</p>
         </div>
 
-        <!-- 幻灯片2：冲突与定价机制 + 油价图表 -->
+        <!-- 幻灯片2：冲突与定价机制 + 两个油价图表 -->
         <div class="slide slide-2">
             <div class="header-section">
                 <h2>冲突与定价机制</h2>
@@ -701,23 +702,45 @@
                         </ul>
                     </div>
                     <div class="content-card">
-                        <h3>经典案例验证</h3>
+                        <h3>对比分析</h3>
                         <p><strong>伊拉克战争 (2003)</strong><br>
-                            战前期推动油价飙升，但战争真正打响且确保未破坏核心油田后，油价反而出现"实预期"的回落。</p>
-                        <p><strong>美伊关系紧张升级</strong><br>
-                            每当出现口头威胁或冲突升级，油价短期脉冲式上涨，但缺乏实质性断供时迅速回落。</p>
+                        战前预期推升油价，战争打响后反而下跌。</p>
+                        <p><strong>美伊冲突 (2026)</strong><br>
+                        持续升级导致油价创新高，风险溢价扩张。</p>
                     </div>
                 </div>
                 <div class="chart-container" style="position: relative;">
-                    <div class="chart-title">美伊关系紧张升级 - 布伦特油价走势</div>
-                    <div class="chart-subtitle">2026年2月-3月 实时数据追踪 | 点击数据点查看事件详情</div>
+                    <div class="chart-title">伊拉克战争 (2003)</div>
+                    <div class="chart-subtitle">2月-5月 油价走势</div>
+                    <canvas id="iraqChart"></canvas>
+                    <div class="event-detail-panel" id="eventPanel1">
+                        <button class="close-btn" onclick="closeEventPanel(1)">✕</button>
+                        <div class="event-date" id="eventDate1"></div>
+                        <div class="event-price" id="eventPrice1"></div>
+                        <div class="event-title" id="eventTitle1"></div>
+                        <div class="event-description" id="eventDescription1"></div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #0F172A;"></div>
+                            <span>油价走势</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #EF4444;"></div>
+                            <span>$35 高点</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container" style="position: relative;">
+                    <div class="chart-title">美伊冲突 (2026)</div>
+                    <div class="chart-subtitle">2月-3月 油价走势</div>
                     <canvas id="oilChart"></canvas>
-                    <div class="event-detail-panel" id="eventPanel">
-                        <button class="close-btn" onclick="closeEventPanel()">✕</button>
-                        <div class="event-date" id="eventDate"></div>
-                        <div class="event-price" id="eventPrice"></div>
-                        <div class="event-title" id="eventTitle"></div>
-                        <div class="event-description" id="eventDescription"></div>
+                    <div class="event-detail-panel" id="eventPanel2">
+                        <button class="close-btn" onclick="closeEventPanel(2)">✕</button>
+                        <div class="event-date" id="eventDate2"></div>
+                        <div class="event-price" id="eventPrice2"></div>
+                        <div class="event-title" id="eventTitle2"></div>
+                        <div class="event-description" id="eventDescription2"></div>
                     </div>
                     <div class="chart-legend">
                         <div class="legend-item">
@@ -727,10 +750,6 @@
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: #EF4444;"></div>
                             <span>$100 心理关口</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #F39C12;"></div>
-                            <span>关键事件</span>
                         </div>
                     </div>
                 </div>
@@ -848,7 +867,23 @@
     <div class="slide-indicators" id="indicators"></div>
 
     <script>
-        // 油价数据
+        // 伊拉克战争油价数据 (2003)
+        const IRAQ_DATA = [
+            { date: "2/末", event: "战争预期升温", priceValue: 34, eventType: "anticipation", description: "战争预期升温，库存下降+不确定性，油价处于高位。" },
+            { date: "3/10", event: "战争临近，供应担忧极强", priceValue: 34.9, eventType: "peak", description: "战争临近，供应担忧达到极强，油价创局部高点。" },
+            { date: "3/12", event: "库存下降+战争临近", priceValue: 34.5, eventType: "tension", description: "库存下降与战争临近双重压力，油价维持高位。" },
+            { date: "3/17", event: "美国发出最后通牒", priceValue: 30.3, eventType: "ultimatum", description: "美国发出最后通牒，市场开始消化战争必然性，油价开始下跌。" },
+            { date: "3/18", event: "市场预期快速战争", priceValue: 26.7, eventType: "expectation", description: "市场预期快速战争，两个月低点出现，风险溢价快速释放。" },
+            { date: "3/19", event: "风险被重新定价", priceValue: 28.4, eventType: "repricing", description: "风险被重新定价，较峰值已跌约16%，市场消化战争风险。" },
+            { date: "3/20", event: "美军空袭巴格达", priceValue: 27.5, eventType: "war_start", description: "美军空袭巴格达，开战即下跌，市场预期已充分反映。" },
+            { date: "3/21", event: "OPEC承诺补供", priceValue: 25.6, eventType: "opec", description: "OPEC承诺补供，跌至阶段低点，市场对供应中断风险消除。" },
+            { date: "3/24-26", event: "局部不确定性", priceValue: 26.5, eventType: "uncertainty", description: "局部不确定性（油井起火），油价被动波动。" },
+            { date: "3/31", event: "战局逐渐明朗", priceValue: 28.0, eventType: "clarity", description: "战局逐渐明朗，油价稳定在较低水平。" },
+            { date: "4/09", event: "巴格达陷落", priceValue: 26.5, eventType: "victory", description: "巴格达陷落，未大幅上涨（无断供），市场预期得到验证。" },
+            { date: "5/01", event: "主要战事结束", priceValue: 26.0, eventType: "end", description: "美宣布主要战事结束，油价低位震荡。" }
+        ];
+
+        // 美伊冲突油价数据 (2026)
         const OIL_DATA = [
             { date: "2/13", event: "春节前后美伊谈判反复", priceValue: 69, eventType: "negotiation", description: "美伊双方在核协议问题上反复拉锯，市场对谈判前景担忧，风险溢价开始积累。" },
             { date: "2/21", event: "美方军事威慑升级", priceValue: 71.5, eventType: "threat", description: "美国增兵中东，发布强硬声明，市场预期冲突升级风险上升，油价高位震荡。" },
@@ -863,26 +898,29 @@
             { date: "3/31", event: "风险溢价回落", priceValue: 104, eventType: "recovery", description: "局势逐步缓和，谈判重启迹象出现，市场开始消化风险溢价，油价回调。" }
         ];
 
-        let chartCoordinates = []; // 存储每个数据点的屏幕坐标
+        let chartCoordinates1 = []; // 伊拉克战争图表坐标
+        let chartCoordinates2 = []; // 美伊冲突图表坐标
 
-        function showEventPanel(data, x, y) {
-            const panel = document.getElementById('eventPanel');
-            document.getElementById('eventDate').textContent = data.date;
-            document.getElementById('eventPrice').textContent = '$' + data.priceValue;
-            document.getElementById('eventTitle').textContent = data.event;
-            document.getElementById('eventDescription').textContent = data.description;
-            
+        function showEventPanel(data, x, y, panelId) {
+            const panel = document.getElementById(panelId);
+            const suffix = panelId === 'eventPanel1' ? '1' : '2';
+            document.getElementById('eventDate' + suffix).textContent = data.date;
+            document.getElementById('eventPrice' + suffix).textContent = '$' + data.priceValue;
+            document.getElementById('eventTitle' + suffix).textContent = data.event;
+            document.getElementById('eventDescription' + suffix).textContent = data.description;
+
             panel.classList.add('show');
-            panel.style.left = (x + 15) + 'px';
-            panel.style.top = (y - 80) + 'px';
+            panel.style.left = (x + 10) + 'px';
+            panel.style.top = (y - 70) + 'px';
         }
 
-        function closeEventPanel() {
-            document.getElementById('eventPanel').classList.remove('show');
+        function closeEventPanel(panelNum) {
+            const panelId = panelNum === 1 ? 'eventPanel1' : 'eventPanel2';
+            document.getElementById(panelId).classList.remove('show');
         }
 
-        function drawOilChart() {
-            const canvas = document.getElementById('oilChart');
+        function drawChart(canvasId, data, coordinates, panelId) {
+            const canvas = document.getElementById(canvasId);
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
@@ -895,7 +933,7 @@
 
             const width = rect.width;
             const height = rect.height;
-            const padding = { top: 20, right: 30, bottom: 40, left: 50 };
+            const padding = { top: 15, right: 20, bottom: 30, left: 40 };
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
 
@@ -904,51 +942,35 @@
             ctx.fillRect(0, 0, width, height);
 
             // Y轴范围
-            const minPrice = 60;
-            const maxPrice = 115;
+            const minPrice = Math.min(...data.map(d => d.priceValue)) - 5;
+            const maxPrice = Math.max(...data.map(d => d.priceValue)) + 5;
             const priceRange = maxPrice - minPrice;
 
             // 绘制网格线
             ctx.strokeStyle = '#E2E8F0';
             ctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const y = padding.top + (chartHeight / 5) * i;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight / 4) * i;
                 ctx.beginPath();
                 ctx.moveTo(padding.left, y);
                 ctx.lineTo(width - padding.right, y);
                 ctx.stroke();
 
-                const price = maxPrice - (priceRange / 5) * i;
+                const price = maxPrice - (priceRange / 4) * i;
                 ctx.fillStyle = '#94A3B8';
-                ctx.font = '12px sans-serif';
+                ctx.font = '10px sans-serif';
                 ctx.textAlign = 'right';
-                ctx.fillText('$' + price.toFixed(0), padding.left - 10, y + 4);
+                ctx.fillText('$' + price.toFixed(0), padding.left - 8, y + 3);
             }
-
-            // 绘制$100参考线
-            const refLineY = padding.top + chartHeight * (1 - (100 - minPrice) / priceRange);
-            ctx.strokeStyle = '#EF4444';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(padding.left, refLineY);
-            ctx.lineTo(width - padding.right, refLineY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            ctx.fillStyle = '#EF4444';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'right';
-            ctx.fillText('$100', padding.left - 10, refLineY - 5);
 
             // 绘制油价曲线
             ctx.strokeStyle = '#0F172A';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
 
-            OIL_DATA.forEach((data, idx) => {
-                const x = padding.left + (chartWidth / (OIL_DATA.length - 1)) * idx;
-                const y = padding.top + chartHeight * (1 - (data.priceValue - minPrice) / priceRange);
+            data.forEach((d, idx) => {
+                const x = padding.left + (chartWidth / (data.length - 1)) * idx;
+                const y = padding.top + chartHeight * (1 - (d.priceValue - minPrice) / priceRange);
 
                 if (idx === 0) {
                     ctx.moveTo(x, y);
@@ -959,75 +981,69 @@
             ctx.stroke();
 
             // 清空坐标数组
-            chartCoordinates = [];
+            coordinates.length = 0;
 
-            // 绘制数据点和事件标记
-            OIL_DATA.forEach((data, idx) => {
-                const x = padding.left + (chartWidth / (OIL_DATA.length - 1)) * idx;
-                const y = padding.top + chartHeight * (1 - (data.priceValue - minPrice) / priceRange);
+            // 绘制数据点
+            data.forEach((d, idx) => {
+                const x = padding.left + (chartWidth / (data.length - 1)) * idx;
+                const y = padding.top + chartHeight * (1 - (d.priceValue - minPrice) / priceRange);
 
-                // 存储坐标用于点击检测
-                chartCoordinates.push({ x, y, data, idx });
+                coordinates.push({ x, y, data: d, idx });
 
                 // 数据点
                 ctx.fillStyle = '#0F172A';
                 ctx.beginPath();
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fill();
 
                 // 事件标记
                 let markerColor = '#F39C12';
-                if (data.eventType === 'war' || data.eventType === 'crisis') {
+                if (d.eventType === 'war' || d.eventType === 'crisis' || d.eventType === 'war_start' || d.eventType === 'peak') {
                     markerColor = '#EF4444';
-                } else if (data.eventType === 'recovery') {
+                } else if (d.eventType === 'recovery' || d.eventType === 'end') {
                     markerColor = '#10B981';
                 }
 
-                ctx.fillStyle = markerColor;
+                ctx.strokeStyle = markerColor;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
                 ctx.stroke();
 
                 // X轴标签
                 ctx.fillStyle = '#94A3B8';
-                ctx.font = '11px sans-serif';
+                ctx.font = '9px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(data.date, x, height - 15);
+                ctx.fillText(d.date, x, height - 12);
             });
 
             // Y轴标签
             ctx.fillStyle = '#64748B';
-            ctx.font = 'bold 12px sans-serif';
+            ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.save();
-            ctx.translate(15, padding.top + chartHeight / 2);
+            ctx.translate(12, padding.top + chartHeight / 2);
             ctx.rotate(-Math.PI / 2);
             ctx.fillText('USD/桶', 0, 0);
             ctx.restore();
 
-            // X轴标签
-            ctx.fillStyle = '#64748B';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('日期', width / 2, height - 5);
-
             // 添加Canvas点击事件
-            canvas.onclick = function(e) {
+            canvas.onclick = function (e) {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
                 const clickY = e.clientY - rect.top;
 
-                // 检测是否点击了任何数据点
-                for (let coord of chartCoordinates) {
+                for (let coord of coordinates) {
                     const distance = Math.sqrt(Math.pow(clickX - coord.x, 2) + Math.pow(clickY - coord.y, 2));
-                    if (distance < 12) { // 点击半径12px
-                        showEventPanel(coord.data, clickX, clickY);
+                    if (distance < 10) {
+                        showEventPanel(coord.data, clickX, clickY, panelId);
                         return;
                     }
                 }
-                closeEventPanel();
+                closeEventPanel(panelId === 'eventPanel1' ? 1 : 2);
             };
         }
+
         let currentSlide = 0;
         const totalSlides = 7;
 
@@ -1043,7 +1059,10 @@
 
             // 当切换到第2页时绘制图表
             if (currentSlide === 1) {
-                setTimeout(drawOilChart, 100);
+                setTimeout(() => {
+                    drawChart('iraqChart', IRAQ_DATA, chartCoordinates1, 'eventPanel1');
+                    drawChart('oilChart', OIL_DATA, chartCoordinates2, 'eventPanel2');
+                }, 100);
             }
         }
 
@@ -1088,7 +1107,8 @@
 
         // 页面加载完成后绘制初始图表
         window.addEventListener('load', () => {
-            drawOilChart();
+            drawChart('iraqChart', IRAQ_DATA, chartCoordinates1, 'eventPanel1');
+            drawChart('oilChart', OIL_DATA, chartCoordinates2, 'eventPanel2');
         });
     </script>
 </body>
