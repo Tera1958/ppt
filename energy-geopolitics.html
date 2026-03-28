@@ -256,7 +256,8 @@
             margin-bottom: 15px;
         }
 
-        #oilChart, #iraqChart {
+        #oilChart,
+        #iraqChart {
             flex: 1;
             width: 100%;
         }
@@ -613,27 +614,35 @@
         .motivation-card {
             background-color: white;
             border-radius: 15px;
-            padding: 35px;
+            padding: 30px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            text-align: center;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
         }
 
         .motivation-card .icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        .motivation-card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #000;
+            font-size: 40px;
             margin-bottom: 15px;
         }
 
+        .motivation-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 12px;
+        }
+
         .motivation-card p {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .motivation-card p strong {
+            color: #333;
+            font-weight: 600;
         }
 
         /* ===== 幻灯片7：结论 ===== */
@@ -704,9 +713,9 @@
                     <div class="content-card">
                         <h3>对比分析</h3>
                         <p><strong>伊拉克战争 (2003)</strong><br>
-                        战前预期推升油价，战争打响后反而下跌。</p>
+                            战前预期推升油价，战争打响后反而下跌。</p>
                         <p><strong>美伊冲突 (2026)</strong><br>
-                        持续升级导致油价创新高，风险溢价扩张。</p>
+                            持续升级导致油价创新高，风险溢价扩张。</p>
                     </div>
                 </div>
                 <div class="chart-container" style="position: relative;">
@@ -824,24 +833,28 @@
             </div>
         </div>
 
-        <!-- 幻灯片6：美国真实动机 -->
+        <!-- 幻灯片6：为什么中东冲突频繁 -->
         <div class="slide slide-6">
-            <h2>美国的真实动机</h2>
+            <h2>为什么中东冲突频繁？</h2>
+            <div style="font-size: 16px; color: #666; margin-bottom: 40px; text-align: center;">大国博弈的根本驱动力</div>
             <div class="motivation-grid">
                 <div class="motivation-card">
                     <div class="icon">💵</div>
-                    <h3>维护全球能源定价权</h3>
-                    <p>石油以美元计价是美元霸权的基石。控制中东局势 = 控制全球能源定价权。</p>
+                    <h3>美元霸权的能源基础</h3>
+                    <p><strong>核心逻辑：</strong>石油以美元计价是美元国际地位的基石。全球每一桶石油交易都强化美元的流动性和需求。</p>
+                    <p style="margin-top: 12px; font-size: 13px; color: #999;"><strong>美国的利益：</strong>控制中东 = 控制全球能源定价权 = 维持美元霸权 = 获得铸币税收益。一旦失去中东影响力，美元的国际地位将被动摇。</p>
                 </div>
                 <div class="motivation-card">
                     <div class="icon">🚢</div>
-                    <h3>控制关键运输通道</h3>
-                    <p>霍尔木兹海峡、苏伊士运河等战略要道的控制权直接影响全球贸易流向和美国的地缘影响力。</p>
+                    <h3>全球贸易的咽喉</h3>
+                    <p><strong>核心逻辑：</strong>霍尔木兹海峡、苏伊士运河等战略要道掌控全球20%的石油和30%的液化天然气运输。</p>
+                    <p style="margin-top: 12px; font-size: 13px; color: #999;"><strong>各国的竞争：</strong>美国通过海军力量控制这些通道，对全球贸易流向拥有绝对话语权。伊朗、俄罗斯等国试图打破这种垄断，争夺地区影响力。</p>
                 </div>
                 <div class="motivation-card">
                     <div class="icon">⚔️</div>
-                    <h3>地缘政治博弈</h3>
-                    <p>对抗伊朗、俄罗斯等竞争对手的影响力扩张，维持中东的亲美格局。</p>
+                    <h3>地缘权力的零和博弈</h3>
+                    <p><strong>核心逻辑：</strong>中东是大国权力竞争的最后堡垒。美国衰落、中国崛起、俄罗斯复兴的背景下，各方都在争夺中东的战略地位。</p>
+                    <p style="margin-top: 12px; font-size: 13px; color: #999;"><strong>冲突的本质：</strong>不是为了石油本身，而是为了地缘政治影响力。伊朗、沙特、以色列、土耳其等地区大国也在争夺话语权，形成多层次的权力竞争。</p>
                 </div>
             </div>
         </div>
